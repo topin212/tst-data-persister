@@ -37,10 +37,10 @@ public class LoadPersistCommand implements CommandLineRunner {
 
         List<Document> documents = documentRequestor.get(hash);
 
-        System.out.println("Got '" + documents.size() + "' objects.");
+        logger.info("Got {} objects.", documents.size());
 
-        System.out.println("Persisting...");
+        logger.info("Persisting...");
         documentPersister.saveAll(documents);
-        System.out.println("Persistance done.");
+        logger.info("Persistance done.");
     }
 }

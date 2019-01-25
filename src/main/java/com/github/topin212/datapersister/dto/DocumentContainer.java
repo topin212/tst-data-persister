@@ -1,4 +1,6 @@
-package com.github.topin212.datapersister.entity;
+package com.github.topin212.datapersister.dto;
+
+import com.github.topin212.datapersister.entity.Document;
 
 public class DocumentContainer {
 

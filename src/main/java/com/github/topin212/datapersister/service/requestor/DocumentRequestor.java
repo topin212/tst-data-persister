@@ -2,7 +2,7 @@ package com.github.topin212.datapersister.service.requestor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.topin212.datapersister.entity.Document;
-import com.github.topin212.datapersister.entity.DocumentContainer;
+import com.github.topin212.datapersister.dto.DocumentContainer;
 import com.github.topin212.datapersister.util.UrlUtil;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
