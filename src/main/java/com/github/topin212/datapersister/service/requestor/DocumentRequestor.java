@@ -38,9 +38,15 @@ public class DocumentRequestor implements Requestor<Document> {
 
         Response response = httpClient.newCall(req).execute();
 
-        assert response.body() != null;
-        InputStream responseBody = response.body().byteStream();
-        DocumentContainer doc = mapper.treeToValue(mapper.readTree(responseBody), DocumentContainer.class);
+        return parseStream(response.body().byteStream());
+    }
+
+    private List<Document> parseStream(InputStream stream) throws IOException {
+        DocumentContainer doc = mapper.treeToValue(mapper.readTree(stream), DocumentContainer.class);
+
+        if(!doc.isValid()){
+            throw new IllegalArgumentException("Provided json is not valid!");
+        }
 
         return Arrays.asList(doc.getData());
     }

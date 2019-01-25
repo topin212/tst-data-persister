@@ -1,6 +1,7 @@
 package com.github.topin212.datapersister.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.time.LocalDateTime;
 
 @Entity(name = "document")
@@ -39,6 +41,14 @@ public class Document {
     private String relatedItem;
 
     private String language;
+
+    @Transient
+    @JsonIgnore
+    public boolean isValid(){
+        return
+                (id != null && !id.isEmpty()) &&
+                (hash != null && !hash.isEmpty());
+    }
 
     public String getId() {
         return id;
