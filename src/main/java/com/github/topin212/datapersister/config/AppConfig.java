@@ -11,12 +11,12 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
 
     @Bean
-    public OkHttpClient okHttpClient(){
+    public OkHttpClient okHttpClient() {
         return new OkHttpClient();
     }
 
     @Bean
-    public ObjectMapper objectMapper(){
+    public ObjectMapper objectMapper() {
         ObjectMapper mapper = new ObjectMapper();
 
         mapper.registerModule(new JavaTimeModule());

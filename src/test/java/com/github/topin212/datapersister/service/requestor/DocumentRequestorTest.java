@@ -22,7 +22,7 @@ public class DocumentRequestorTest {
 
     @Test
     public void getShouldReturnCorrectValue_WhenSuppliedWithValidURl() throws IOException {
-        List all = docRequestor.get("https://lb-api-sandbox.prozorro.gov.ua/api/2.4/contracts/23567e24f52746ef92c470be6059d193/documents");
+        List all = docRequestor.get("23567e24f52746ef92c470be6059d193");
 
         assertThat(all.size(), equalTo(3));
     }

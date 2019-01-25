@@ -1,4 +1,4 @@
-package com.github.topin212.datapersister.entities;
+package com.github.topin212.datapersister.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -7,8 +7,6 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 
@@ -16,7 +14,6 @@ import java.time.LocalDateTime;
 public class Document {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
     private String hash;
@@ -40,6 +37,8 @@ public class Document {
     private String documentType;
 
     private String relatedItem;
+
+    private String language;
 
     public String getId() {
         return id;
@@ -127,5 +126,13 @@ public class Document {
 
     public void setRelatedItem(String relatedItem) {
         this.relatedItem = relatedItem;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }

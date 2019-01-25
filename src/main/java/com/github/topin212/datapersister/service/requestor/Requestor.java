@@ -4,5 +4,5 @@ import java.io.IOException;
 import java.util.List;
 
 public interface Requestor<T> {
-    List<T> get(String url) throws IOException;
+    List<T> get(String hash) throws IOException;
 }
