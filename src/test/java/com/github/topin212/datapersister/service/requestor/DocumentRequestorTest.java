@@ -2,84 +2,86 @@ package com.github.topin212.datapersister.service.requestor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.topin212.datapersister.entity.Document;
+import com.github.topin212.datapersister.entity.validation.DocumentContainerValidator;
 import okhttp3.OkHttpClient;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
+import okhttp3.mock.Behavior;
+import okhttp3.mock.MockInterceptor;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 
-import static org.hamcrest.Matchers.everyItem;
-import static org.hamcrest.Matchers.isA;
-import static org.junit.Assert.assertThat;
+import static okhttp3.mock.MediaTypes.MEDIATYPE_JSON;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.not;
 
 public class DocumentRequestorTest {
 
     private Requestor docRequestor;
+    private String baseUrl = "https://lb-api-sandbox.prozorro.gov.ua/api/2.4";
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
     @Before
-    public void setup() {
-        docRequestor = new DocumentRequestor(new OkHttpClient(), new ObjectMapper());
+    public void setup() throws IOException {
+
+        MockInterceptor mockInterceptor = setupMockInterceptor();
+
+        OkHttpClient testHttpClient = new OkHttpClient.Builder()
+                .addInterceptor(mockInterceptor)
+                .build();
+
+        docRequestor = new DocumentRequestor(
+                testHttpClient,
+                new ObjectMapper(),
+                new DocumentContainerValidator());
+
+        ReflectionTestUtils.setField(docRequestor, "baseUrl", baseUrl);
     }
 
     @Test
-    public void parsingShouldSucceed_WhenSuppliedWithValidJSON() throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Class cl = docRequestor.getClass();
-        Method parseStreamMethod = cl.getDeclaredMethod("parseStream", InputStream.class);
-        parseStreamMethod.setAccessible(true);
+    public void objectObtainingShouldSucceed_WhenSuppliedWithValidJSON() throws IOException {
+        List<Document> validHash = docRequestor.get("validHash");
 
-        File jsonFile = new File("src/test/resources/test1.json");
+        Document doc = validHash.get(0);
 
-        FileInputStream fis = new FileInputStream(jsonFile);
-
-        List<Document> result = (List) parseStreamMethod.invoke(docRequestor, fis);
-
-        assertThat(
-                result,
-                everyItem(isValid())
-        );
+        assertThat(doc.getId(), not(isEmptyOrNullString()));
+        assertThat(doc.getHash(), not(isEmptyOrNullString()));
+        assertThat(doc.getDescription(), isEmptyOrNullString());
     }
 
     @Test
-    public void parsingShouldThrowIllegalArgumentException_WhenSuppliedWithInValidJSON() throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        expectedException.expectCause(isA(IllegalArgumentException.class));
-
-        Class cl = docRequestor.getClass();
-        Method parseStreamMethod = cl.getDeclaredMethod("parseStream", InputStream.class);
-        parseStreamMethod.setAccessible(true);
-
-        File jsonFile = new File("src/test/resources/test1_invalid.json");
-
-        FileInputStream fis = new FileInputStream(jsonFile);
-
-        parseStreamMethod.invoke(docRequestor, fis);
+    public void objectObtainingShouldThrowIllegalArgumentException_WhenSuppliedWithInValidJSON() throws IOException {
+        expectedException.expect(IllegalArgumentException.class);
+        docRequestor.get("invalidHash");
     }
 
-    private Matcher<Document> isValid() {
-        return new BaseMatcher<>() {
-            @Override
-            public boolean matches(Object o) {
-                Document doc = (Document) o;
-                return doc.isValid();
-            }
+    private MockInterceptor setupMockInterceptor() throws FileNotFoundException {
 
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("should be true");
-            }
-        };
+        MockInterceptor mockInterceptor = new MockInterceptor();
+        mockInterceptor.behavior(Behavior.UNORDERED);
+
+        FileInputStream valid = new FileInputStream(new File("src/test/resources/test1.json"));
+        FileInputStream invalid = new FileInputStream(new File("src/test/resources/test1_invalid.json"));
+
+        mockInterceptor.addRule()
+                .get()
+                .url(baseUrl + "/contracts/validHash/documents")
+                .respond(valid, MEDIATYPE_JSON);
+
+        mockInterceptor.addRule()
+                .get(baseUrl + "/contracts/invalidHash/documents")
+                .respond(invalid, MEDIATYPE_JSON);
+
+        return mockInterceptor;
     }
 }

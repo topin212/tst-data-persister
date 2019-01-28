@@ -42,14 +42,6 @@ public class Document {
 
     private String language;
 
-    @Transient
-    @JsonIgnore
-    public boolean isValid(){
-        return
-                (id != null && !id.isEmpty()) &&
-                (hash != null && !hash.isEmpty());
-    }
-
     public String getId() {
         return id;
     }

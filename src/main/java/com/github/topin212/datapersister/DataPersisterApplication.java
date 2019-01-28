@@ -9,6 +9,5 @@ public class DataPersisterApplication {
     public static void main(String[] args) {
         SpringApplication.run(DataPersisterApplication.class, args);
     }
-
 }
 

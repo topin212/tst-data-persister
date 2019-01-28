@@ -8,8 +8,13 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQL94Dialect
+        jdbc:
+          lob:
+            non_contextual_creation: true
   datasource:
     url: <connection string here>
       username: <username>
       password: <password>
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: org.postgresql.Driver #or any other
+
+baseUrl: https://lb-api-sandbox.prozorro.gov.ua/api/2.4

@@ -3,6 +3,7 @@ package com.github.topin212.datapersister.config;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.topin212.datapersister.entity.validation.DocumentContainerValidator;
 import okhttp3.OkHttpClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,5 +24,10 @@ public class AppConfig {
         mapper.enable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE);
 
         return mapper;
+    }
+
+    @Bean
+    public DocumentContainerValidator getDocumentContainerValidator(){
+        return new DocumentContainerValidator();
     }
 }
